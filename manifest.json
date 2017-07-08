@@ -1,0 +1,31 @@
+{
+  "variables": {
+    "ruby_version": "2.3.1"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "region": "ap-northeast-1",
+    "source_ami": "ami-3bd3c45c",
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user",
+    "ami_name": "packer-example {{timestamp}}"
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "sleep 30",
+      "sudo yum -y update",
+      "sudo yum -y install git gcc-c++ patch openssl-devel readline readline-devel libyaml-devel zlib zlib-devel libffi-devel make bzip2 autoconf automake libtool bison iconv-devel",
+      "sudo git clone https://github.com/sstephenson/rbenv.git /usr/local/rbenv",
+      "echo 'export RBENV_ROOT=\"/usr/local/rbenv\"' | sudo tee -a /etc/profile.d/rbenv.sh",
+      "echo 'export PATH=\"${RBENV_ROOT}/bin:${PATH}\"' | sudo tee -a /etc/profile.d/rbenv.sh",
+      "echo 'eval \"$(rbenv init -)\"' | sudo tee -a /etc/profile.d/rbenv.sh",
+      "sudo mkdir -p /usr/local/rbenv/shims -m 755",
+      "sudo mkdir -p /usr/local/rbenv/versions -m 755",
+      "sudo git clone https://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build",
+      "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv install {{user `ruby_version`}}",
+      "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv rehash",
+      "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv global {{user `ruby_version`}}"
+    ]
+  }]
+}
