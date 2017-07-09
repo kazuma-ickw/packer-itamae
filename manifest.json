@@ -1,6 +1,10 @@
 {
   "variables": {
-    "ruby_version": "2.3.1"
+    "ruby_version": "2.3.1",
+    "itamae_repo": "../itamae-rails",
+    "itamae_destination": "/tmp/itamae_repo",
+    "itamae_root_recipe": "/roles/app/default.rb",
+    "itamae_node_json": "/nodes/app.json"
   },
   "builders": [{
     "type": "amazon-ebs",
@@ -10,22 +14,31 @@
     "ssh_username": "ec2-user",
     "ami_name": "packer-example {{timestamp}}"
   }],
-  "provisioners": [{
-    "type": "shell",
-    "inline": [
-      "sleep 30",
-      "sudo yum -y update",
-      "sudo yum -y install git gcc-c++ patch openssl-devel readline readline-devel libyaml-devel zlib zlib-devel libffi-devel make bzip2 autoconf automake libtool bison iconv-devel",
-      "sudo git clone https://github.com/sstephenson/rbenv.git /usr/local/rbenv",
-      "echo 'export RBENV_ROOT=\"/usr/local/rbenv\"' | sudo tee -a /etc/profile.d/rbenv.sh",
-      "echo 'export PATH=\"${RBENV_ROOT}/bin:${PATH}\"' | sudo tee -a /etc/profile.d/rbenv.sh",
-      "echo 'eval \"$(rbenv init -)\"' | sudo tee -a /etc/profile.d/rbenv.sh",
-      "sudo mkdir -p /usr/local/rbenv/shims -m 755",
-      "sudo mkdir -p /usr/local/rbenv/versions -m 755",
-      "sudo git clone https://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build",
-      "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv install {{user `ruby_version`}}",
-      "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv rehash",
-      "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv global {{user `ruby_version`}}"
-    ]
-  }]
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "{{user `itamae_repo`}}",
+      "destination": "{{user `itamae_destination`}}"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sleep 30",
+        "sudo yum -y update",
+        "sudo yum -y install git gcc-c++ patch openssl-devel readline readline-devel libyaml-devel zlib zlib-devel libffi-devel make bzip2 autoconf automake libtool bison iconv-devel ruby-devel",
+        "sudo git clone https://github.com/sstephenson/rbenv.git /usr/local/rbenv",
+        "echo 'export RBENV_ROOT=\"/usr/local/rbenv\"' | sudo tee -a /etc/profile.d/rbenv.sh",
+        "echo 'export PATH=\"${RBENV_ROOT}/bin:${PATH}\"' | sudo tee -a /etc/profile.d/rbenv.sh",
+        "echo 'eval \"$(rbenv init -)\"' | sudo tee -a /etc/profile.d/rbenv.sh",
+        "sudo mkdir -p /usr/local/rbenv/shims -m 755",
+        "sudo mkdir -p /usr/local/rbenv/versions -m 755",
+        "sudo git clone https://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build",
+        "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv install {{user `ruby_version`}}",
+        "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv rehash",
+        "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv global {{user `ruby_version`}}",
+        "sudo gem install io-console itamae",
+        "sudo /usr/local/bin/itamae local {{user `itamae_destination`}}{{user `itamae_root_recipe`}} -j {{user `itamae_destination`}}{{user `itamae_node_json`}}"
+      ]
+    }
+  ]
 }
