@@ -6,19 +6,40 @@
     "itamae_root_recipe": "/roles/app/default.rb",
     "itamae_node_json": "/nodes/app.json"
   },
-  "builders": [{
-    "type": "amazon-ebs",
-    "region": "ap-northeast-1",
-    "source_ami": "ami-3bd3c45c",
-    "instance_type": "t2.micro",
-    "ssh_username": "ec2-user",
-    "ami_name": "packer-example {{timestamp}}"
-  }],
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "ap-northeast-1",
+      "source_ami": "ami-3bd3c45c",
+      "instance_type": "t2.micro",
+      "ssh_username": "ec2-user",
+      "ami_name": "packer-example {{timestamp}}"
+    },
+    {
+      "type": "docker",
+      "image": "centos:7",
+      "commit": true
+    }
+  ],
   "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "yum -y install sudo"
+      ],
+      "only": ["docker"]
+    },
     {
       "type": "file",
       "source": "{{user `itamae_repo`}}",
-      "destination": "{{user `itamae_destination`}}"
+      "destination": "{{user `itamae_destination`}}",
+      "only": ["amazon-ebs"]
+    },
+    {
+      "type": "file",
+      "source": "{{user `itamae_repo`}}/",
+      "destination": "{{user `itamae_destination`}}",
+      "only": ["docker"]
     },
     {
       "type": "shell",
