@@ -1,7 +1,7 @@
 {
   "variables": {
     "ruby_version": "2.3.1",
-    "itamae_repo": "../itamae-rails",
+    "itamae_repo": "{{env `ITAMAE_REPO`}}",
     "itamae_destination": "/tmp/itamae_repo",
     "itamae_root_recipe": "/roles/app/default.rb",
     "itamae_node_json": "/nodes/app.json"
