@@ -74,5 +74,12 @@
         "sudo /usr/local/bin/itamae local {{user `itamae_destination`}}{{user `itamae_root_recipe`}} -j {{user `itamae_destination`}}{{user `itamae_node_json`}}"
       ]
     }
+  ],
+  "post-processors": [
+    {
+      "type": "docker-tag",
+      "repository": "kazuma-ickw/packer-itamae",
+      "tag": "0.1"
+    }
   ]
 }
