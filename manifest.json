@@ -79,7 +79,8 @@
     {
       "type": "docker-tag",
       "repository": "kazuma-ickw/packer-itamae",
-      "tag": "0.1"
+      "tag": "0.1",
+      "only": ["docker"]
     }
   ]
 }
