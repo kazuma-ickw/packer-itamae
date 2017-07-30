@@ -71,7 +71,7 @@
         "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv exec gem install bundler",
         "sudo -s RBENV_ROOT=/usr/local/rbenv /usr/local/rbenv/bin/rbenv rehash",
         "sudo gem install io-console itamae itamae-secrets",
-        "sudo /usr/local/bin/itamae local {{user `itamae_destination`}}{{user `itamae_root_recipe`}} -j {{user `itamae_destination`}}{{user `itamae_node_json`}} -l debug"
+        "sudo /usr/local/bin/itamae local {{user `itamae_destination`}}{{user `itamae_root_recipe`}} -j {{user `itamae_destination`}}{{user `itamae_node_json`}}"
       ]
     }
   ],
